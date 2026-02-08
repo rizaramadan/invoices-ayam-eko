@@ -1,11 +1,599 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hello World</title>
+    <title>Invoice - Ayam Eko</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: #f5f5f5;
+            color: #333;
+            line-height: 1.5;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        .header {
+            background: #b71c1c;
+            color: white;
+            padding: 20px 16px;
+            text-align: center;
+        }
+        .header h1 { font-size: 22px; font-weight: 700; }
+        .header p { font-size: 13px; opacity: 0.85; margin-top: 4px; }
+
+        /* List View */
+        .group { margin-bottom: 24px; }
+        .group-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #b71c1c;
+            padding: 8px 0;
+            border-bottom: 2px solid #b71c1c;
+            margin-bottom: 8px;
+        }
+        .customer-list { list-style: none; }
+        .customer-list li { border-bottom: 1px solid #e0e0e0; }
+        .customer-list a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 8px;
+            text-decoration: none;
+            color: #333;
+            transition: background 0.15s;
+        }
+        .customer-list a:hover { background: #fce4ec; }
+        .customer-name { font-weight: 500; }
+        .customer-total { font-size: 14px; color: #666; }
+
+        /* Invoice View */
+        .invoice-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            margin-top: 16px;
+            overflow: hidden;
+        }
+        .invoice-header {
+            background: #b71c1c;
+            color: white;
+            padding: 16px;
+        }
+        .invoice-header h2 { font-size: 18px; }
+        .invoice-header .group-label {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 2px;
+        }
+        .invoice-body { padding: 16px; }
+
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        .invoice-table th {
+            text-align: left;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: #999;
+            padding: 6px 4px;
+            border-bottom: 2px solid #eee;
+        }
+        .invoice-table th:last-child,
+        .invoice-table td:last-child { text-align: right; }
+        .invoice-table th:nth-child(2),
+        .invoice-table td:nth-child(2) { text-align: center; }
+        .invoice-table td {
+            padding: 10px 4px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+        }
+        .item-name { font-weight: 500; }
+        .item-sambal { font-size: 12px; color: #888; }
+        .item-portion { font-size: 12px; color: #b71c1c; }
+        .item-note { font-size: 12px; color: #888; font-style: italic; }
+
+        .total-row td {
+            border-top: 2px solid #333;
+            border-bottom: none;
+            font-weight: 700;
+            font-size: 16px;
+            padding-top: 12px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.15s;
+        }
+        .btn-primary {
+            background: #b71c1c;
+            color: white;
+        }
+        .btn-primary:hover { background: #d32f2f; }
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+        .btn-secondary:hover { background: #ccc; }
+        .btn-copy-wa {
+            background: #25D366;
+            color: white;
+        }
+        .btn-copy-wa:hover { background: #1da851; }
+
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #333;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            z-index: 100;
+        }
+        .toast.show { opacity: 1; }
+
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            color: #b71c1c;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-top: 16px;
+        }
+        .back-link:hover { text-decoration: underline; }
+
+        .summary-box {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+        .summary-box h3 {
+            font-size: 14px;
+            color: #999;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+        .summary-total {
+            font-size: 24px;
+            font-weight: 700;
+            color: #b71c1c;
+        }
+        .summary-count { font-size: 13px; color: #888; margin-top: 2px; }
+
+        @media print {
+            body { background: white; }
+            .btn-row, .back-link, .toast { display: none !important; }
+            .invoice-card { box-shadow: none; }
+        }
+    </style>
 </head>
 <body>
-    <h1>Hello World</h1>
+    <div class="header">
+        <h1>Ayam Eko</h1>
+        <p>Daftar Invoice Pesanan</p>
+    </div>
+    <div class="container" id="app"></div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+    var GROUPS = [
+        {
+            name: "Pesanan Shima",
+            customers: [
+                {
+                    id: "shima", name: "Shima", items: [
+                        { name: "Ayam Rebus", portion: "1/2 ekor", qty: 2, price: 70000 },
+                        { name: "Ayam Panggang", portion: "1/2 ekor", qty: 2, price: 70000 },
+                        { name: "Ayam Klungkung Bali", portion: "1/2 ekor", qty: 2, price: 50000, sambal: "Sambal Bali" },
+                        { name: "Bebek Panggang", portion: "1/4 ekor", qty: 1, price: 75000 }
+                    ]
+                },
+                {
+                    id: "ajeng", name: "Ajeng", items: [
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Ayam Panggang", qty: 1, price: 140000 }
+                    ]
+                },
+                {
+                    id: "mitha", name: "Mitha", items: [
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Bodo" },
+                        { name: "Ayam Klungkung Bali", qty: 1, price: 100000, sambal: "Sambal Bali" },
+                        { name: "Ayam Rebus", qty: 2, price: 140000 }
+                    ]
+                },
+                {
+                    id: "vita", name: "Vita", items: [
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Bodo" },
+                        { name: "Ayam Panggang", qty: 1, price: 140000 }
+                    ]
+                },
+                {
+                    id: "rida", name: "Rida", items: [
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambel Hejo" },
+                        { name: "Ayam Serundeng", qty: 1, price: 100000, sambal: "Sambel Terasi" },
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambel Bali" },
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Bebek Panggang", portion: "1/2 ekor", qty: 2, price: 150000 }
+                    ]
+                },
+                {
+                    id: "arum", name: "Arum", items: [
+                        { name: "Ayam Panggang", qty: 1, price: 140000 },
+                        { name: "Ayam Rebus", qty: 1, price: 140000 }
+                    ]
+                },
+                {
+                    id: "gilang", name: "Gilang", items: [
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "sahara", name: "Sahara", items: [
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Ayam Lombok", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "femi", name: "Femi", items: [
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambel Hejo" },
+                        { name: "Ayam Klungkung", qty: 1, price: 100000, sambal: "Sambel Bali" }
+                    ]
+                },
+                {
+                    id: "niken", name: "Niken", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Bodo" },
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Bali" },
+                        { name: "Ayam Serundeng", qty: 1, price: 100000, sambal: "Sambal Terasi" }
+                    ]
+                },
+                {
+                    id: "nia", name: "Nia", items: [
+                        { name: "Ayam Klungkung Bali", qty: 1, price: 100000, sambal: "Sambal Bali" },
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Bodo" },
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Terasi" }
+                    ]
+                },
+                {
+                    id: "eka", name: "Eka", items: [
+                        { name: "Ayam Klungkung Bali", qty: 1, price: 100000, sambal: "Sambal Bali" },
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Terasi" },
+                        { name: "Ayam Rebus", qty: 1, price: 140000 }
+                    ]
+                },
+                {
+                    id: "yustika", name: "Yustika", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Bali" },
+                        { name: "Ayam Panggang", qty: 1, price: 140000 }
+                    ]
+                },
+                {
+                    id: "bu-billy", name: "Bu Billy", items: [
+                        { name: "Ayam Rebus", portion: "1/2 ekor", qty: 1, price: 70000 },
+                        { name: "Ayam Panggang", portion: "1/2 ekor", qty: 1, price: 70000 },
+                        { name: "Sambel Bodo", qty: 2, price: 0, note: "tambahan" }
+                    ]
+                },
+                {
+                    id: "yuan", name: "Yuan", items: [
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Ayam Klungkung", qty: 1, price: 100000 }
+                    ]
+                },
+                {
+                    id: "dina", name: "Dina", items: [
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Ayam Lombok", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "mama-arka", name: "Mama Arka", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Terasi" }
+                    ]
+                },
+                {
+                    id: "silmi", name: "Silmi", items: [
+                        { name: "Ayam Lombok", qty: 1, price: 100000, sambal: "Sambal Bali" }
+                    ]
+                },
+                {
+                    id: "nabila", name: "Nabila", items: [
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Ayam Panggang", qty: 1, price: 140000 },
+                        { name: "Ayam Klungkung", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Pesanan Fitri",
+            customers: [
+                {
+                    id: "mala", name: "Mala", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Terasi" },
+                        { name: "Ayam Serundeng", qty: 1, price: 100000, sambal: "Sambal Bali" },
+                        { name: "Ayam Rebus", qty: 1, price: 140000 },
+                        { name: "Char Siu Ayam", qty: 1, price: 140000 }
+                    ]
+                },
+                {
+                    id: "dwi", name: "Dwi", items: [
+                        { name: "Bebek Panggang", qty: 1, price: 300000 }
+                    ]
+                },
+                {
+                    id: "emil", name: "Emil", items: [
+                        { name: "Ayam Rebus", qty: 2, price: 140000 },
+                        { name: "Ayam Panggang", qty: 2, price: 140000 }
+                    ]
+                },
+                {
+                    id: "monita", name: "Monita", items: [
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambel Terasi" }
+                    ]
+                },
+                {
+                    id: "mbaniken-fitri", name: "MbaNiken Fitri", items: [
+                        { name: "Ayam Serundeng", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "sary", name: "Sary", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "indri", name: "Indri", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Terasi" },
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "nurul", name: "Nurul", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Terasi" },
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "mpit", name: "Mpit", items: [
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                }
+            ]
+        },
+        {
+            name: "Pesanan Nuy",
+            customers: [
+                {
+                    id: "ipeh", name: "Ipeh", items: [
+                        { name: "Ayam Lombok", qty: 1, price: 100000, sambal: "Sambal Bodo" },
+                        { name: "Sambal Bali", qty: 1, price: 0, note: "tambahan" }
+                    ]
+                },
+                {
+                    id: "ningsih", name: "Ningsih", items: [
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Terasi" }
+                    ]
+                },
+                {
+                    id: "novita", name: "Novita", items: [
+                        { name: "Ayam Klungkung", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "nuy", name: "Nuy", items: [
+                        { name: "Ayam Klungkung", qty: 1, price: 100000, sambal: "Sambal Bali" }
+                    ]
+                },
+                {
+                    id: "hasanah", name: "Hasanah", items: [
+                        { name: "Ayam Kremes", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                },
+                {
+                    id: "teh-neng-lia", name: "Teh Neng Lia", items: [
+                        { name: "Ayam Klungkung", qty: 1, price: 100000, sambal: "Sambal Bodo" },
+                        { name: "Ayam Djogja", qty: 1, price: 100000, sambal: "Sambal Bodo" }
+                    ]
+                }
+            ]
+        }
+    ];
+
+    function formatRp(n) {
+        return "Rp " + n.toLocaleString("id-ID");
+    }
+
+    function getTotal(items) {
+        return items.reduce(function(sum, it) { return sum + it.price * it.qty; }, 0);
+    }
+
+    function findCustomer(id) {
+        for (var i = 0; i < GROUPS.length; i++) {
+            for (var j = 0; j < GROUPS[i].customers.length; j++) {
+                if (GROUPS[i].customers[j].id === id)
+                    return { customer: GROUPS[i].customers[j], group: GROUPS[i].name };
+            }
+        }
+        return null;
+    }
+
+    function showToast(msg) {
+        var t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        setTimeout(function() { t.classList.remove("show"); }, 2000);
+    }
+
+    function getInvoiceURL(id) {
+        return "https://rizaramadan.github.io/invoices-ayam-eko/#" + id;
+    }
+
+    function copyLink(id) {
+        var url = getInvoiceURL(id);
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(url).then(function() {
+                showToast("Link berhasil disalin!");
+            });
+        } else {
+            var inp = document.createElement("input");
+            inp.value = url;
+            document.body.appendChild(inp);
+            inp.select();
+            document.execCommand("copy");
+            document.body.removeChild(inp);
+            showToast("Link berhasil disalin!");
+        }
+    }
+
+    function copyWA(id) {
+        var res = findCustomer(id);
+        if (!res) return;
+        var c = res.customer;
+        var total = getTotal(c.items);
+        var text = "*Invoice Ayam Eko*\nNama: " + c.name + "\n\n";
+        c.items.forEach(function(it, i) {
+            var line = (i + 1) + ". " + it.name;
+            if (it.portion) line += " (" + it.portion + ")";
+            line += " x" + it.qty;
+            if (it.price > 0) line += " = " + formatRp(it.price * it.qty);
+            if (it.sambal) line += "\n   " + it.sambal;
+            if (it.note) line += " _(" + it.note + ")_";
+            text += line + "\n";
+        });
+        text += "\n*Total: " + formatRp(total) + "*";
+        text += "\n\nDetail: " + getInvoiceURL(id);
+
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(text).then(function() {
+                showToast("Invoice WA berhasil disalin!");
+            });
+        } else {
+            var inp = document.createElement("textarea");
+            inp.value = text;
+            document.body.appendChild(inp);
+            inp.select();
+            document.execCommand("copy");
+            document.body.removeChild(inp);
+            showToast("Invoice WA berhasil disalin!");
+        }
+    }
+
+    function renderList() {
+        var allTotal = 0;
+        var allCount = 0;
+        GROUPS.forEach(function(g) {
+            g.customers.forEach(function(c) {
+                allTotal += getTotal(c.items);
+                allCount++;
+            });
+        });
+
+        var html = '<div class="summary-box">' +
+            '<h3>Total Semua Pesanan</h3>' +
+            '<div class="summary-total">' + formatRp(allTotal) + '</div>' +
+            '<div class="summary-count">' + allCount + ' orang</div>' +
+            '</div>';
+
+        GROUPS.forEach(function(g) {
+            html += '<div class="group"><div class="group-title">' + g.name + '</div><ul class="customer-list">';
+            g.customers.forEach(function(c) {
+                var t = getTotal(c.items);
+                html += '<li><a href="#' + c.id + '">' +
+                    '<span class="customer-name">' + c.name + '</span>' +
+                    '<span class="customer-total">' + formatRp(t) + '</span>' +
+                    '</a></li>';
+            });
+            html += '</ul></div>';
+        });
+
+        document.getElementById("app").innerHTML = html;
+    }
+
+    function renderInvoice(id) {
+        var res = findCustomer(id);
+        if (!res) { renderList(); return; }
+        var c = res.customer;
+        var total = getTotal(c.items);
+
+        var rows = "";
+        c.items.forEach(function(it) {
+            var sub = it.price * it.qty;
+            var nameHtml = '<span class="item-name">' + it.name + '</span>';
+            if (it.portion) nameHtml += '<br><span class="item-portion">' + it.portion + '</span>';
+            if (it.sambal) nameHtml += '<br><span class="item-sambal">' + it.sambal + '</span>';
+            if (it.note) nameHtml += '<br><span class="item-note">' + it.note + '</span>';
+
+            rows += '<tr>' +
+                '<td>' + nameHtml + '</td>' +
+                '<td>' + it.qty + '</td>' +
+                '<td>' + (it.price > 0 ? formatRp(sub) : '-') + '</td>' +
+                '</tr>';
+        });
+
+        var html = '<a href="#" class="back-link">&larr; Kembali ke daftar</a>' +
+            '<div class="invoice-card">' +
+            '<div class="invoice-header">' +
+            '<h2>Invoice: ' + c.name + '</h2>' +
+            '<div class="group-label">' + res.group + '</div>' +
+            '</div>' +
+            '<div class="invoice-body">' +
+            '<table class="invoice-table">' +
+            '<thead><tr><th>Item</th><th>Qty</th><th>Subtotal</th></tr></thead>' +
+            '<tbody>' + rows +
+            '<tr class="total-row"><td colspan="2">Total</td><td>' + formatRp(total) + '</td></tr>' +
+            '</tbody></table>' +
+            '<div class="btn-row">' +
+            '<button class="btn btn-primary" onclick="copyLink(\'' + c.id + '\')">Salin Link</button>' +
+            '<button class="btn btn-copy-wa" onclick="copyWA(\'' + c.id + '\')">Salin untuk WA</button>' +
+            '</div></div></div>';
+
+        document.getElementById("app").innerHTML = html;
+    }
+
+    function route() {
+        var hash = location.hash.slice(1);
+        if (hash) {
+            renderInvoice(hash);
+        } else {
+            renderList();
+        }
+        window.scrollTo(0, 0);
+    }
+
+    window.addEventListener("hashchange", route);
+    route();
+    </script>
 </body>
 </html>
