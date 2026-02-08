@@ -107,6 +107,34 @@
             padding-top: 12px;
         }
 
+        .bank-info {
+            margin-top: 16px;
+            padding: 12px;
+            background: #f9f9f9;
+            border: 1px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+        .bank-info-title {
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            color: #999;
+            margin-bottom: 6px;
+        }
+        .bank-info-detail {
+            line-height: 1.6;
+        }
+        .bank-info-detail .bank-name {
+            font-weight: 600;
+            color: #005baa;
+        }
+        .bank-info-detail .account-number {
+            font-weight: 700;
+            font-size: 15px;
+            color: #333;
+        }
+
         .btn-row {
             display: flex;
             gap: 8px;
@@ -513,10 +541,11 @@
 
                 // Mobile: use Web Share API to share directly to WhatsApp etc.
                 if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+                    var customerName = findCustomer(id) ? findCustomer(id).customer.name : id;
                     navigator.share({
                         files: [file],
                         title: 'Invoice Ayam Eko',
-                        text: 'Invoice untuk ' + (findCustomer(id) ? findCustomer(id).customer.name : id)
+                        text: 'Invoice untuk ' + customerName + '\n\nTransfer pembayaran ke:\nBank BCA a.n. Siti Maryati\nNo. Rek: 1371352258'
                     }).then(function() {
                         showToast("Invoice berhasil dibagikan!");
                     }).catch(function(err) {
@@ -620,6 +649,13 @@
             '<tbody>' + rows +
             '<tr class="total-row"><td colspan="2">Total</td><td>' + formatRp(total) + '</td></tr>' +
             '</tbody></table>' +
+            '<div class="bank-info">' +
+            '<div class="bank-info-title">Transfer Pembayaran</div>' +
+            '<div class="bank-info-detail">' +
+            '<span class="bank-name">Bank BCA</span><br>' +
+            'a.n. Siti Maryati<br>' +
+            'No. Rek: <span class="account-number">1371352258</span>' +
+            '</div></div>' +
             '<div class="btn-row">' +
             '<button class="btn btn-primary" onclick="copyLink(\'' + c.id + '\')">Salin Link</button>' +
             '<button class="btn btn-copy-wa" onclick="copyWA(\'' + c.id + '\')">Salin Gambar untuk WA</button>' +
