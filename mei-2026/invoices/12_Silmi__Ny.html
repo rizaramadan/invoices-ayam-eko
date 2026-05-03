@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice — Silmi</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Courier New', 'Menlo', monospace; background: #eee; color: #1a1a1a; padding: 16px 8px; }
+.receipt { background: white; max-width: 360px; margin: 0 auto; padding: 24px 22px; box-shadow: 0 2px 12px rgba(0,0,0,0.12); border-radius: 6px; font-size: 13px; }
+.shop { text-align: center; font-size: 24px; font-weight: 900; letter-spacing: 3px; }
+.tagline { text-align: center; font-size: 11px; color: #666; letter-spacing: 1px; margin-top: 2px; }
+.sline { border-top: 2px solid #111; margin: 10px 0; }
+.dline { border-top: 1.5px dashed #333; margin: 8px 0; }
+.info { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 2px; }
+.item { margin: 6px 0; }
+.item-name { font-weight: 700; font-size: 13px; }
+.item-detail { display: flex; justify-content: space-between; font-size: 12px; padding-left: 6px; color: #333; }
+.total { display: flex; justify-content: space-between; font-weight: 900; font-size: 16px; margin: 6px 0; }
+.footer { text-align: center; margin-top: 12px; font-size: 11px; color: #555; line-height: 1.6; }
+.heart { font-size: 14px; }
+@media print {
+  body { background: white; padding: 0; }
+  .receipt { box-shadow: none; max-width: 100%; }
+}
+</style></head><body>
+<div class="receipt">
+<div class="shop">AYAM MASEKO</div>
+<div class="tagline">Catering Ayam &amp; Bebek</div>
+<div class="sline"></div>
+<div class="info"><span>No. Order</span><span>: 012</span></div>
+<div class="info"><span>Nama</span><span>: Silmi</span></div>
+<div class="info"><span>Tanggal</span><span>: 03/05/2026</span></div>
+<div class="dline"></div>
+
+    <div class="item">
+      <div class="item-name">Ayam Rebus</div>
+      <div class="item-detail">
+        <span>1 × 140.000</span>
+        <span>140.000</span>
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-name">Chilli Oil 100gr</div>
+      <div class="item-detail">
+        <span>1 × 15.000</span>
+        <span>15.000</span>
+      </div>
+    </div>
+    <div class="item">
+      <div class="item-name">Sambel Bodo</div>
+      <div class="item-detail">
+        <span>1 × 15.000</span>
+        <span>15.000</span>
+      </div>
+    </div>
+<div class="dline"></div>
+<div class="total"><span>TOTAL</span><span>Rp 170.000</span></div>
+<div class="sline"></div>
+<div class="footer">
+  <span class="heart">★</span> Terima kasih <span class="heart">★</span><br>
+  Pesenan Mas Eko &mdash; Mei 2026<br>
+  BCA 1371352258 a.n. Siti Maryati
+</div>
+</div></body></html>
