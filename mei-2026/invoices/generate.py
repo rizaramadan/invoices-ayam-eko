@@ -6,24 +6,24 @@ from pathlib import Path
 
 HERE = Path(__file__).parent
 MONTH_DIR = HERE.parent
-DATE = "03/05/2026"
+DATE = "04/05/2026"
 
 customers = [
     (1,  "Vita",   [("Bebek Panggang", 0.5, 300000)]),
     (2,  "Arum",   [("Ayam Panggang", 1, 140000), ("Ayam Rebus", 1, 140000), ("Acar Cabe Ijo", 1, 15000)]),
     (3,  "Nabila", [("Ayam Panggang", 1, 140000), ("Char Siu Ayam", 1, 140000), ("Chilli Oil Botol", 1, 15000), ("Hoisim Sauce", 2, 15000)]),
-    (4,  "Andona", [("Ayam Klungkung", 3, 100000), ("Chilli Oil 100gr", 2, 15000), ("Sambel Bodo (gratis)", 3, 0)]),
+    (4,  "Andona", [("Ayam Klungkung", 3, 100000), ("Chilli Oil 100gr", 2, 15000), ("Sambel Bodo", 3, 0)]),
     (5,  "Ajeng",  [("Ayam Panggang", 1, 140000), ("Chilli Oil Botol", 1, 15000)]),
-    (6,  "Yuan",   [("Ayam Lombok", 1, 100000), ("Ayam Djogja", 1, 100000)]),
-    (7,  "Gilang", [("Ayam Kremes", 1, 100000), ("Sambel Bodo", 2, 15000)]),
+    (6,  "Yuan",   [("Ayam Lombok", 1, 100000), ("Ayam Djogja", 1, 100000), ("Sambel Hejo", 1, 0), ("Sambel Terasi", 1, 0)]),
+    (7,  "Gilang", [("Ayam Kremes", 1, 100000), ("Sambel Bodo (extra)", 2, 15000), ("Sambel Bodo", 1, 0)]),
     (8,  "Yanti",  [("Ayam Panggang", 1, 140000), ("Chilli Oil Botol", 1, 15000)]),
     (9,  "Sahara", [("Ayam Rebus", 2, 140000), ("Bebek Panggang", 0.5, 300000)]),
-    (10, "Femi",   [("Ayam Rebus", 1, 140000), ("Ayam Klungkung", 1, 100000), ("Chilli Oil Botol", 1, 15000)]),
-    (11, "Mitha",  [("Ayam Rebus", 1, 140000), ("Ayam Klungkung", 1, 100000)]),
-    (12, "Silmi",  [("Ayam Rebus", 1, 140000), ("Chilli Oil 100gr", 1, 15000), ("Sambel Bodo", 1, 15000)]),
-    (13, "Shima",  [("Ayam Rebus", 1, 140000), ("Ayam Klungkung", 1, 100000)]),
-    (14, "Krista", [("Ayam Klungkung", 1, 100000), ("Ayam Lombok", 1, 100000)]),
-    (15, "Nia",    [("Ayam Kremes", 1, 100000), ("Ayam Serundeng", 1, 100000), ("Ayam Djogja", 1, 100000)]),
+    (10, "Femi",   [("Ayam Rebus", 1, 140000), ("Ayam Klungkung", 1, 100000), ("Chilli Oil Botol", 1, 15000), ("Sambel Bali", 1, 0)]),
+    (11, "Mitha",  [("Ayam Rebus", 1, 140000), ("Ayam Klungkung", 1, 100000), ("Sambel Bodo", 1, 0)]),
+    (12, "Silmi",  [("Ayam Rebus", 1, 140000), ("Chilli Oil 100gr", 1, 15000), ("Sambel Bodo (extra)", 1, 15000)]),
+    (13, "Shima",  [("Ayam Rebus", 1, 140000), ("Ayam Klungkung", 1, 100000), ("Sambel Bodo", 1, 0)]),
+    (14, "Krista", [("Ayam Klungkung", 1, 100000), ("Ayam Lombok", 1, 100000), ("Sambel Bodo", 1, 0), ("Sambel Bali", 1, 0)]),
+    (15, "Nia",    [("Ayam Kremes", 1, 100000), ("Ayam Serundeng", 1, 100000), ("Ayam Djogja", 1, 100000), ("Sambel Hejo", 1, 0), ("Sambel Bali", 1, 0), ("Sambel Terasi", 1, 0)]),
 ]
 
 def postfix(no, name):
@@ -65,12 +65,16 @@ def render(no, name, items):
     rows = ""
     for label, qty, price in items:
         sub = qty * price
+        if price == 0:
+            left, right = f"{fmt_qty(qty)} pcs", "GRATIS"
+        else:
+            left, right = f"{fmt_qty(qty)} × {fmt_money(price)}", fmt_money(sub)
         rows += f"""
     <div class="item">
       <div class="item-name">{label}</div>
       <div class="item-detail">
-        <span>{fmt_qty(qty)} × {fmt_money(price)}</span>
-        <span>{fmt_money(sub)}</span>
+        <span>{left}</span>
+        <span>{right}</span>
       </div>
     </div>"""
     return f"""<!DOCTYPE html>
